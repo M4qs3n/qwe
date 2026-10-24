@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRACKETOFF // Турнирная платформа</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Верхняя информационная плашка -->
+    <div class="ticker-wrap">
+        <span class="ticker-label"><span aria-hidden="true">●</span> ARENA LIVE</span>
+        <div class="ticker-viewport" aria-label="Новости BRACKETOFF">
+            <div class="ticker">
+                <div class="ticker-group">
+                    <span class="ticker-item"><span aria-hidden="true">⚡</span> BRACKETOFF // ТУРНИРЫ И КИБЕРСПОРТ</span>
+                    <span class="ticker-item"><span aria-hidden="true">🏆</span> СЛЕДИ ЗА ПРИЗОВЫМИ И РАСПИСАНИЕМ</span>
+                    <span class="ticker-item"><span aria-hidden="true">🎮</span> СОБЕРИ КОМАНДУ И ВСТУПАЙ В МАТЧ</span>
+                </div>
+                <div class="ticker-group" aria-hidden="true">
+                    <span class="ticker-item"><span>⚡</span> BRACKETOFF // ТУРНИРЫ И КИБЕРСПОРТ</span>
+                    <span class="ticker-item"><span>🏆</span> СЛЕДИ ЗА ПРИЗОВЫМИ И РАСПИСАНИЕМ</span>
+                    <span class="ticker-item"><span>🎮</span> СОБЕРИ КОМАНДУ И ВСТУПАЙ В МАТЧ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="site-nav" aria-label="Главная навигация">
+        <button class="logo" type="button" onclick="showPage('page-tournaments')" aria-label="BRACKETOFF — на главную">
+            <span class="logo-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>BRACKET<span class="logo-accent">OFF</span></span>
+        </button>
+        <div class="nav-links" aria-label="Основная навигация">
+            <a href="#" data-page="page-tournaments" onclick="showPage('page-tournaments'); return false;">Турниры</a>
+            <a href="#" data-page="page-teams" onclick="showPage('page-teams'); return false;">Команды</a>
+            <a href="#" data-page="page-leaderboard" onclick="showPage('page-leaderboard'); return false;">Лидерборд</a>
+            <a href="#" data-page="page-community" onclick="showPage('page-community'); return false;">Сообщество</a>
+        </div>
+        <div class="user-info">
+            <button id="profile-open-button" class="user-identity" type="button" onclick="openPlayerProfile()" aria-label="Открыть профиль">
+                <span id="user-avatar-mark" class="user-avatar-mark" aria-hidden="true">B</span>
+                <span class="user-identity-copy">
+                    <span id="user-display">Гость</span>
+                    <span id="user-role-badge" class="badge guest">ГОСТЬ</span>
+                </span>
+                <span class="user-identity-arrow" aria-hidden="true">↗</span>
+            </button>
+            <a href="#" id="nav-admin" class="nav-admin-button" data-page="page-admin" onclick="showPage('page-admin'); return false;" style="display:none;">⌘ <span>АДМИН-ПАНЕЛЬ</span></a>
+            <div id="notification-widget" class="notification-widget" style="display:none;">
+                <button id="notification-toggle" class="notification-toggle" type="button" aria-label="Уведомления" aria-expanded="false">
+                    <span aria-hidden="true">♢</span>
+                    <span>Уведомления</span>
+                    <span id="notification-count" class="notification-count" style="display:none;">0</span>
+                </button>
+                <div id="notification-panel" class="notification-panel" style="display:none;">
+                    <div class="notification-panel-header">
+                        <strong>Уведомления</strong>
+                        <div class="notification-panel-actions">
+                            <button id="notification-sound-toggle" class="action-btn-small" type="button" aria-pressed="true">Звук: вкл.</button>
+                            <button id="notification-close" class="action-btn-small" type="button">Закрыть</button>
+                        </div>
+                    </div>
+                    <div id="notification-list" class="notification-list"></div>
+                </div>
+            </div>
+            <button id="auth-btn" class="btn-ai-small" onclick="openAuthPage('login')">ВОЙТИ</button>
+            <button id="register-nav-btn" class="btn-ai-small" onclick="openAuthPage('register')">РЕГИСТРАЦИЯ</button>
+            <button id="logout-btn" class="action-btn-small" onclick="Auth.logout()" style="display:none;">Выход</button>
+        </div>
+    </nav>
+
+    <button id="chat-open-button" class="chat-open-button" type="button" onclick="openSupportChat()" aria-label="Открыть чат поддержки" title="Чат поддержки" style="display:none;">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-6.5A7.5 7.5 0 1 1 20 11.5Z"></path>
+            <path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01"></path>
+        </svg>
+        <span id="chat-unread-count" class="notification-count" style="display:none;">0</span>
+    </button>
+
+    <main class="main-container">
+        <!-- ТУРНИРЫ -->
+        <div id="page-tournaments" class="page">
+            <div class="hero-banner">
+                <div class="hero-content">
+                    <span class="hero-tag">BRACKETOFF // ТУРНИРНАЯ ПЛАТФОРМА</span>
+                    <h1 class="hero-title">СТАНЬ ЧЕМПИОНОМ <br><span class="text-glow">КИБЕРСПОРТА</span></h1>
+                    <p class="hero-subtitle">Участвуй в профессиональных турнирах, побеждай и забирай призовой фонд.</p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="stat-tournaments">0</div><div class="stat-label">ТУРНИРОВ</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-teams">0</div><div class="stat-label">КОМАНД В УЧАСТИИ</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-prize">—</div><div class="stat-label">ОБЩИЙ ПРИЗОВОЙ ФОНД</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-users">0</div><div class="stat-label">УЧАСТНИКОВ ПЛАТФОРМЫ</div></div>
+            </div>
+
+            <div class="page-header" style="text-align: left; margin-top: 40px;">
+                <h2>Турниры</h2>
+                <p class="catalog-subtitle">Выбирай дисциплину и следи за турнирами в любимых играх.</p>
+            </div>
+            <div id="tournament-list" class="game-categories"></div>
+        </div>
+
+        <!-- ЛИДЕРБОРД -->
+        <div id="page-leaderboard" class="page leaderboard-page" style="display:none;">
+            <section class="leaderboard-hero">
+                <div class="leaderboard-hero-copy">
+                    <span class="hero-tag">BRACKETOFF // РЕЙТИНГ КОМАНД</span>
+                    <h1>ПУТЬ К <span class="text-glow">ВЕРШИНЕ</span></h1>
+                    <p>Здесь решают победы. Следи за сильнейшими составами и найди свою команду среди чемпионов.</p>
+                </div>
+                <div class="leaderboard-hero-mark" aria-hidden="true">🏆</div>
+            </section>
+            <div class="leaderboard-toolbar">
+                <div class="leaderboard-stats" aria-live="polite">
+                    <div class="leaderboard-stat"><span id="leaderboard-team-count">—</span><small>КОМАНД</small></div>
+                    <div class="leaderboard-stat"><span id="leaderboard-win-count">—</span><small>ПОБЕД</small></div>
+                </div>
+                <button id="clear-team-leaderboard" class="action-btn-small leaderboard-clear-button" type="button" onclick="clearTeamLeaderboard()" hidden>
+                    Очистить рейтинг
+                </button>
+            </div>
+            <section id="team-leaderboard-list" class="team-leaderboard" aria-label="Рейтинг команд" aria-live="polite">
+                <div class="leaderboard-loading">Загружаем таблицу лидеров<span>...</span></div>
+            </section>
+        </div>
+
+        <!-- ПРОФИЛЬ ИГРОКА -->
+        <div id="page-profile" class="page profile-page" style="display:none;">
+            <section id="profile-hero" class="profile-hero">
+                <img id="profile-cover-image" class="profile-cover-art" alt="" hidden>
+                <div class="profile-identity">
+                    <div id="profile-avatar-frame" class="profile-avatar-frame" data-frame-style="neon">
+                        <img id="profile-avatar-image" alt="Аватар игрока" hidden>
+                        <span id="profile-avatar-placeholder" aria-hidden="true">?</span>
+                    </div>
+                    <div class="profile-identity-copy">
+                        <span class="hero-tag">BRACKETOFF // ИГРОВОЙ ПРОФИЛЬ</span>
+                        <h1 id="profile-username">Игрок</h1>
+                        <span id="profile-rank-label" class="profile-rank-label">НОВЫЙ ИГРОК</span>
+                        <p class="profile-rating-rule">100 рейтинговых очков за каждую победу команды</p>
+                    </div>
+                </div>
+                <span class="profile-hero-mark" aria-hidden="true">✦</span>
+            </section>
+
+            <section class="profile-rating-grid" aria-label="Статистика игрока">
+                <article class="profile-rating-card">
+                    <span class="profile-rating-icon" aria-hidden="true">◈</span>
+                    <strong id="profile-rating-points">0</strong>
+                    <small>РЕЙТИНГ-ОЧКИ</small>
+                </article>
+                <article class="profile-rating-card">
+                    <span class="profile-rating-icon" aria-hidden="true">♛</span>
+                    <strong id="profile-rating-wins">0</strong>
+                    <small>ПОБЕДЫ КОМАНД</small>
+                </article>
+                <article class="profile-rating-card">
+                    <span class="profile-rating-icon" aria-hidden="true">#</span>
+                    <strong id="profile-rating-rank">—</strong>
+                    <small>МЕСТО В РЕЙТИНГЕ</small>
+                </article>
+                <article class="profile-rating-card">
+                    <span class="profile-rating-icon" aria-hidden="true">⚑</span>
+                    <strong id="profile-rating-tournaments">0</strong>
+                    <small>ТУРНИРЫ</small>
+                </article>
+            </section>
+
+            <section class="card profile-customization">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="profile-section-kicker">ТВОЙ СТИЛЬ</span>
+                        <h2>Настроить профиль</h2>
+                        <p>Загрузи собственный аватар и фон профиля. Изображения хранятся на сервере.</p>
+                    </div>
+                </div>
+                <form id="profile-customization-form" class="profile-customization-form" onsubmit="savePlayerProfile(event)">
+                    <label class="profile-upload-card">
+                        <span class="profile-upload-preview profile-avatar-preview">
+                            <img id="profile-avatar-preview" alt="" hidden>
+                            <span id="profile-avatar-preview-placeholder" aria-hidden="true">+</span>
+                        </span>
+                        <span><strong>Аватар игрока</strong><small>PNG, JPEG или WebP · до 512 КБ</small></span>
+                        <input id="profile-avatar-file" type="file" accept="image/png,image/jpeg,image/webp">
+                    </label>
+                    <label class="profile-upload-card profile-cover-upload-card">
+                        <span id="profile-cover-preview" class="profile-upload-preview profile-cover-preview"><img id="profile-cover-preview-image" alt="" hidden><span id="profile-cover-preview-placeholder" aria-hidden="true">▧</span></span>
+                        <span><strong>Фон профиля</strong><small>PNG, JPEG или WebP · до 1,5 МБ</small></span>
+                        <input id="profile-cover-file" type="file" accept="image/png,image/jpeg,image/webp">
+                    </label>
+                    <label class="profile-option-control">
+                        <span><strong>Цвет рамки</strong><small>Подбери акцент аватара</small></span>
+                        <select id="profile-avatar-frame-color">
+                            <option value="#00f0ff">Неоновый циан</option>
+                            <option value="#b693ff">Фиолетовый</option>
+                            <option value="#ff5f7e">Коралловый</option>
+                            <option value="#ffd36f">Золотой</option>
+                            <option value="#ffffff">Хром</option>
+                        </select>
+                    </label>
+                    <label class="profile-option-control">
+                        <span><strong>Стиль рамки</strong><small>Форма и свечение</small></span>
+                        <select id="profile-avatar-frame-style">
+                            <option value="neon">Неоновое свечение</option>
+                            <option value="double">Двойной контур</option>
+                            <option value="solid">Чистый контур</option>
+                        </select>
+                    </label>
+                    <div class="profile-form-actions">
+                        <button class="btn-ai-small" type="submit">Сохранить оформление</button>
+                        <button class="action-btn-small" type="button" onclick="resetPlayerProfile()">Сбросить</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="profile-teams-section">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="profile-section-kicker">ТВОЯ КОМАНДА</span>
+                        <h2>Эмблемы составов</h2>
+                        <p>Эмблема будет показываться рядом с командой в публичном рейтинге.</p>
+                    </div>
+                </div>
+                <div id="profile-teams-list" class="profile-teams-list" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <!-- КОМАНДЫ -->
+        <div id="page-teams" class="page teams-page" style="display:none;">
+            <section class="teams-hero card">
+                <span class="hero-tag">BRACKETOFF // СОСТАВЫ</span>
+                <h1>Найди своих <span class="text-glow">тиммейтов</span></h1>
+                <p>Капитаны создают команды и принимают игроков. Участники могут подать заявку и общаться в комнате своего матча. Для доступа к чату название команды должно совпадать с названием в турнирной сетке.</p>
+            </section>
+            <section id="team-invite-banner" class="team-invite-banner card" aria-live="polite" hidden></section>
+            <section id="team-create-section" class="card team-create-section" hidden>
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="profile-section-kicker">РОЛЬ КАПИТАНА</span>
+                        <h2>Создать команду</h2>
+                        <p>Создатель становится капитаном и управляет заявками в состав.</p>
+                    </div>
+                </div>
+                <form id="team-create-form" class="team-create-form">
+                    <label class="form-group">
+                        <span>Название команды</span>
+                        <input id="team-create-name" type="text" minlength="2" maxlength="40" required>
+                    </label>
+                    <label class="form-group">
+                        <span>Игра</span>
+                        <input id="team-create-game" type="text" maxlength="80" placeholder="Например, Counter-Strike 2" required>
+                    </label>
+                    <button class="btn-ai-small" type="submit">СТАТЬ КАПИТАНОМ</button>
+                </form>
+            </section>
+            <section class="team-management-section">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="profile-section-kicker">ТВОЯ РОЛЬ</span>
+                        <h2>Моя команда</h2>
+                    </div>
+                </div>
+                <div id="my-team-panel" class="team-management-panel card" aria-live="polite"></div>
+            </section>
+            <section class="team-directory-section">
+                <div class="profile-section-heading">
+                    <div>
+                        <span class="profile-section-kicker">ОТКРЫТЫЕ СОСТАВЫ</span>
+                        <h2>Команды сообщества</h2>
+                    </div>
+                </div>
+                <div id="teams-directory" class="teams-directory" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <!-- СООБЩЕСТВО -->
+        <div id="page-community" class="page community-page" style="display:none;">
+            <div class="community-hero card">
+                <span class="hero-tag">BRACKETOFF // СООБЩЕСТВО</span>
+                <h1>Найди свою <span class="text-glow">команду</span></h1>
+                <p>Общайся с игроками, ищи тиммейтов и собирай состав для следующего турнира.</p>
+                <a class="btn-ai community-discord-button" href="https://discord.gg/7GaE5eFJTr" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">◉</span> Присоединиться к Discord
+                </a>
+            </div>
+            <section class="community-links" aria-label="Социальные каналы">
+                <article class="community-link-card card">
+                    <span class="community-link-label">TELEGRAM // КАНАЛ</span>
+                    <h2>zxcbiznes</h2>
+                    <p>Подписывайся на Telegram-канал сообщества.</p>
+                    <a class="btn-ai-small" href="https://t.me/zxcbiznes" target="_blank" rel="noopener noreferrer">Открыть канал</a>
+                </article>
+                <article class="community-link-card card">
+                    <span class="community-link-label">TELEGRAM // КАНАЛ</span>
+                    <h2>metallvibes</h2>
+                    <p>Ещё один канал сообщества в Telegram.</p>
+                    <a class="btn-ai-small" href="https://t.me/metallvibes" target="_blank" rel="noopener noreferrer">Открыть канал</a>
+                </article>
+            </section>
+        </div>
+
+        <!-- СЕТКА (BRACKET) -->
+        <div id="page-bracket" class="page" style="display:none;">
+            <button onclick="showPage('page-tournaments')" class="action-btn-small" style="margin-bottom: 20px;">← Назад</button>
+            <div class="page-header">
+                <h2 id="bracket-title">Турнирная Сетка</h2>
+                <p id="bracket-subtitle" style="color: var(--primary);">Открой состав по названию команды; администратор может продвинуть победителя отдельной кнопкой.</p>
+            </div>
+            <div id="bracket-winner" class="winner-plaque" style="display:none;"></div>
+            <div class="bracket-wrapper card">
+                <div id="bracket-container" class="bracket"></div>
+            </div>
+            <section id="bracket-team-details" class="bracket-team-details card" aria-live="polite" hidden></section>
+            <section id="match-room" class="match-room card" hidden>
+                <div class="match-room-header">
+                    <div>
+                        <span class="match-live-indicator">● ОБЩИЙ ЧАТ МАТЧА</span>
+                        <h3 id="match-room-title"></h3>
+                    </div>
+                    <button id="match-room-close" class="action-btn-small" type="button">Закрыть</button>
+                </div>
+                <div id="match-chat-messages" class="match-chat-messages" aria-live="polite"></div>
+                <form id="match-chat-form" class="match-chat-form">
+                    <textarea id="match-chat-input" rows="2" maxlength="1000" placeholder="Сообщение для обеих команд…" required></textarea>
+                    <button class="btn-ai-small" type="submit">ОТПРАВИТЬ</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- АВТОРИЗАЦИЯ -->
+        <div id="page-auth" class="page" style="display:none;">
+            <div class="card auth-card">
+                <div class="tab-switch">
+                    <button type="button" class="tab-btn active" id="tab-login-btn" onclick="switchAuthTab('login')">Вход</button>
+                    <button type="button" class="tab-btn" id="tab-reg-btn" onclick="switchAuthTab('register')">Регистрация</button>
+                </div>
+                <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+                    <div class="form-group">
+                        <label>Имя пользователя</label>
+                        <input type="text" id="auth-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="auth-password" required>
+                    </div>
+                    <div id="registration-consents" class="registration-consents" hidden>
+                        <label class="consent-option">
+                            <input id="agreement-consent" type="checkbox">
+                            <span>Принимаю <a href="user-agreement.html" target="_blank" rel="noopener noreferrer">Пользовательское соглашение</a>.</span>
+                        </label>
+                        <label class="consent-option">
+                            <input id="privacy-consent" type="checkbox">
+                            <span>Даю согласие на обработку персональных данных согласно <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">Политике обработки персональных данных</a>.</span>
+                        </label>
+                    </div>
+                    <button type="submit" id="auth-submit-btn" class="btn-ai">ВОЙТИ В АРЕНУ</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- АДМИНКА -->
+        <div id="page-admin" class="page" style="display:none;">
+            <div class="page-header"><h2>Панель Управления</h2></div>
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" onclick="switchAdminTab('create', this)">+ Новый турнир</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tournaments', this)">Турниры</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('applications', this)">📋 Заявки</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('accepted-teams', this)">✅ Принятые команды</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('users', this)">👥 Пользователи</button>
+                <button id="admin-audit-tab-button" class="admin-tab-btn" onclick="switchAdminTab('audit-logs', this)" style="display:none;">Журнал действий</button>
+            </div>
+
+            <!-- Создание турнира -->
+            <div id="admin-tab-create" class="admin-tab-content card">
+                <form onsubmit="handleCreateTournament(event)">
+                    <input type="hidden" id="tournament-edit-id">
+                    <div class="form-group">
+                        <label>Название турнира</label>
+                        <input type="text" id="t-name" required placeholder="Cyber Major 2026">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="t-game">Игра</label>
+                            <select id="t-game">
+                                <option value="">Выберите игру</option>
+                                <optgroup label="Шутеры">
+                                    <option value="Counter-Strike 2">Counter-Strike 2</option>
+                                    <option value="Valorant">Valorant</option>
+                                    <option value="Overwatch 2">Overwatch 2</option>
+                                    <option value="Rainbow Six Siege">Rainbow Six Siege</option>
+                                    <option value="Marvel Rivals">Marvel Rivals</option>
+                                    <option value="THE FINALS">THE FINALS</option>
+                                    <option value="Call of Duty: Black Ops 7">Call of Duty: Black Ops 7</option>
+                                    <option value="Call of Duty: Black Ops 6">Call of Duty: Black Ops 6</option>
+                                    <option value="Delta Force">Delta Force</option>
+                                    <option value="Escape from Tarkov">Escape from Tarkov</option>
+                                    <option value="Destiny 2">Destiny 2</option>
+                                    <option value="Team Fortress 2">Team Fortress 2</option>
+                                </optgroup>
+                                <optgroup label="MOBA">
+                                    <option value="Dota 2">Dota 2</option>
+                                    <option value="League of Legends">League of Legends</option>
+                                    <option value="Smite 2">Smite 2</option>
+                                    <option value="Honor of Kings">Honor of Kings</option>
+                                </optgroup>
+                                <optgroup label="Королевская битва">
+                                    <option value="Fortnite">Fortnite</option>
+                                    <option value="PUBG: Battlegrounds">PUBG: Battlegrounds</option>
+                                    <option value="Apex Legends">Apex Legends</option>
+                                    <option value="Call of Duty: Warzone">Call of Duty: Warzone</option>
+                                </optgroup>
+                                <optgroup label="Спортивные">
+                                    <option value="EA SPORTS FC 26">EA SPORTS FC 26</option>
+                                    <option value="Rocket League">Rocket League</option>
+                                    <option value="eFootball">eFootball</option>
+                                    <option value="NBA 2K26">NBA 2K26</option>
+                                    <option value="Madden NFL 26">Madden NFL 26</option>
+                                </optgroup>
+                                <optgroup label="Файтинги">
+                                    <option value="Tekken 8">Tekken 8</option>
+                                    <option value="Street Fighter 6">Street Fighter 6</option>
+                                    <option value="Mortal Kombat 1">Mortal Kombat 1</option>
+                                    <option value="Guilty Gear -Strive-">Guilty Gear -Strive-</option>
+                                    <option value="Brawlhalla">Brawlhalla</option>
+                                </optgroup>
+                                <optgroup label="Стратегии">
+                                    <option value="StarCraft II">StarCraft II</option>
+                                    <option value="Age of Empires IV">Age of Empires IV</option>
+                                    <option value="Civilization VI">Civilization VI</option>
+                                    <option value="Warcraft III: Reforged">Warcraft III: Reforged</option>
+                                </optgroup>
+                                <optgroup label="Карточные и автобаттлеры">
+                                    <option value="Hearthstone">Hearthstone</option>
+                                    <option value="Teamfight Tactics">Teamfight Tactics</option>
+                                    <option value="Marvel Snap">Marvel Snap</option>
+                                    <option value="Dota Underlords">Dota Underlords</option>
+                                </optgroup>
+                                <optgroup label="Гонки">
+                                    <option value="Forza Horizon 5">Forza Horizon 5</option>
+                                    <option value="F1 25">F1 25</option>
+                                    <option value="Trackmania">Trackmania</option>
+                                    <option value="Gran Turismo 7">Gran Turismo 7</option>
+                                </optgroup>
+                                <optgroup label="Выживание и песочницы">
+                                    <option value="Minecraft">Minecraft</option>
+                                    <option value="Rust">Rust</option>
+                                    <option value="ARK: Survival Ascended">ARK: Survival Ascended</option>
+                                    <option value="DayZ">DayZ</option>
+                                    <option value="Palworld">Palworld</option>
+                                    <option value="Valheim">Valheim</option>
+                                    <option value="Phasmophobia">Phasmophobia</option>
+                                </optgroup>
+                                <option value="other">Другая игра…</option>
+                            </select>
+                            <input type="text" id="t-custom-game" placeholder="Введите название игры" style="display:none; margin-top:10px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="t-date">Дата начала</label>
+                            <input type="date" id="t-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="t-prize">Призовой фонд</label>
+                            <input type="number" id="t-prize" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="t-currency">Валюта</label>
+                            <select id="t-currency">
+                                <option value="USD">USD — доллар США</option>
+                                <option value="EUR">EUR — евро</option>
+                                <option value="RUB">RUB — рубль</option>
+                                <option value="KZT">KZT — тенге</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="t-status">Статус</label>
+                            <select id="t-status">
+                                <option value="upcoming">Скоро</option>
+                                <option value="live">Идёт</option>
+                                <option value="completed">Завершён</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="t-team-size">Игроков в команде</label>
+                        <input type="number" id="t-team-size" min="1" max="100" step="1" required>
+                        <small>Заявка принимается только при точном совпадении размера состава.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="t-description">Описание</label>
+                        <textarea id="t-description" rows="3" placeholder="Правила, формат и другая информация"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Список команд (каждая с новой строки)</label>
+                        <textarea id="t-teams" rows="6" placeholder="NAVI&#10;FaZe&#10;G2&#10;Vitality..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="t-submit-btn" class="btn-ai">СОЗДАТЬ ТУРНИР</button>
+                        <button type="button" id="t-cancel-edit" class="action-btn-small" onclick="cancelTournamentEdit()" style="display:none;">Отмена</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Управление турнирами -->
+            <div id="admin-tab-tournaments" class="admin-tab-content card" style="display:none;">
+                <div id="admin-tournaments-list" class="admin-table-wrapper"></div>
+            </div>
+
+            <!-- Заявки -->
+            <div id="admin-tab-applications" class="admin-tab-content card" style="display:none;">
+                <div id="admin-applications-list" class="admin-table-wrapper"></div>
+            </div>
+
+            <!-- Реестр принятых команд -->
+            <div id="admin-tab-accepted-teams" class="admin-tab-content card" style="display:none;">
+                <div class="registry-toolbar">
+                    <div>
+                        <h3>Реестр принятых команд</h3>
+                        <p>Очистка убирает записи только из реестра; заявки и сетка остаются без изменений.</p>
+                    </div>
+                    <button id="clear-accepted-teams" class="action-btn-small" type="button" onclick="clearAcceptedTeamRegistry()">Очистить реестр</button>
+                </div>
+                <div id="admin-accepted-teams-list" class="admin-table-wrapper"></div>
+            </div>
+
+            <!-- Пользователи -->
+            <div id="admin-tab-users" class="admin-tab-content card" style="display:none;">
+                <div class="admin-user-search">
+                    <label for="admin-user-search-input">Поиск участника</label>
+                    <input id="admin-user-search-input" type="search" placeholder="Имя пользователя, ID или роль" autocomplete="off">
+                    <span id="admin-user-search-count" aria-live="polite"></span>
+                </div>
+                <div id="admin-users-list" class="admin-table-wrapper"></div>
+            </div>
+
+            <!-- Журнал старшего и главного администраторов -->
+            <div id="admin-tab-audit-logs" class="admin-tab-content card" style="display:none;">
+                <div class="registry-toolbar">
+                    <div>
+                        <h3>Журнал действий</h3>
+                        <p>Старший видит действия младших, средних и старших администраторов; главный системный администратор — полный журнал. Хранятся последние 500 записей.</p>
+                    </div>
+                    <button class="action-btn-small" type="button" onclick="loadAdminAuditLogs()">Обновить</button>
+                </div>
+                <div id="admin-audit-logs-list" class="admin-table-wrapper"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <a href="user-agreement.html">Пользовательское соглашение</a>
+        <a href="privacy-policy.html">Обработка персональных данных</a>
+        <a href="cookie-policy.html">Cookies и браузерное хранилище</a>
+        <button type="button" onclick="showPrivacyNotice()">Настройки хранения</button>
+    </footer>
+
+    <aside id="privacy-notice" class="privacy-notice" role="region" aria-label="Информация о cookies и браузерном хранилище" hidden>
+        <div>
+            <strong>Cookies и данные браузера</strong>
+            <p>Мы не устанавливаем cookies и не используем рекламную аналитику. Для входа и настроек используются необходимые данные в localStorage. Внешние сайты и загружаемые ресурсы могут применять собственные технологии.</p>
+            <a href="cookie-policy.html">Подробнее</a>
+        </div>
+        <div class="privacy-notice-actions">
+            <button class="action-btn-small" type="button" onclick="clearLocalBrowserData()">Очистить данные браузера</button>
+            <button class="btn-ai-small" type="button" onclick="dismissPrivacyNotice()">Понятно</button>
+        </div>
+    </aside>
+
+    <div id="notification-toast" class="notification-toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Личный чат с поддержкой -->
+    <div id="support-chat-modal" class="modal-backdrop support-chat-backdrop" style="display:none;">
+        <section class="support-chat card" role="dialog" aria-modal="true" aria-labelledby="support-chat-title">
+            <header class="support-chat-header">
+                <div>
+                    <span class="support-chat-kicker">BRACKETOFF SUPPORT</span>
+                    <h2 id="support-chat-title">Чат с администратором</h2>
+                </div>
+                <button class="action-btn-small" type="button" onclick="closeSupportChat()" aria-label="Закрыть чат">Закрыть</button>
+            </header>
+            <div class="support-chat-layout">
+                <aside id="support-chat-sidebar" class="support-chat-sidebar" hidden>
+                    <header class="support-chat-sidebar-header">
+                        <div>
+                            <span class="chat-section-eyebrow">ПОДДЕРЖКА</span>
+                            <strong>Диалоги</strong>
+                        </div>
+                        <span id="chat-thread-count" class="chat-thread-count">0</span>
+                    </header>
+                    <div id="support-chat-users" class="support-chat-users"></div>
+                </aside>
+                <div class="support-chat-conversation">
+                    <header id="support-chat-peer" class="support-chat-peer">
+                        <span class="support-chat-peer-avatar" aria-hidden="true">S</span>
+                        <span class="support-chat-peer-copy">
+                            <strong id="support-chat-peer-name">Команда поддержки</strong>
+                            <span id="support-chat-peer-status">Обычно отвечаем быстро</span>
+                        </span>
+                        <span class="support-chat-secure"><span aria-hidden="true">●</span> Личный чат</span>
+                    </header>
+                    <section id="support-chat-workflow" class="support-chat-workflow" hidden>
+                        <div class="support-chat-resolution">
+                            <div class="support-chat-resolution-copy">
+                                <strong id="support-chat-resolution-title">Вопрос открыт</strong>
+                                <span id="support-chat-resolution-description"></span>
+                                <div class="support-chat-resolution-parties">
+                                    <span id="support-chat-user-confirmation">Пользователь: ожидается</span>
+                                    <span id="support-chat-admin-confirmation">Администратор: ожидается</span>
+                                </div>
+                            </div>
+                            <button id="support-chat-resolution-button" class="support-chat-resolution-button" type="button">Вопрос решён</button>
+                        </div>
+                        <div id="support-chat-restriction-banner" class="support-chat-restriction-banner" hidden></div>
+                        <details id="support-chat-sanction-panel" class="support-chat-sanction-panel" hidden>
+                            <summary>Ограничения пользователя</summary>
+                            <form id="support-chat-sanction-form" class="support-chat-sanction-form">
+                                <label>
+                                    Причина
+                                    <select id="support-chat-sanction-reason" required>
+                                        <option value="unsporting">Неспортивное поведение</option>
+                                        <option value="harassment">Оскорбления или травля</option>
+                                        <option value="spam">Спам</option>
+                                        <option value="rule_violation">Нарушение правил</option>
+                                        <option value="other">Другое</option>
+                                    </select>
+                                </label>
+                                <label>
+                                    Подробности
+                                    <input id="support-chat-sanction-details" type="text" maxlength="500" placeholder="Уточнение причины (необязательно)">
+                                </label>
+                                <div class="support-chat-sanction-duration">
+                                    <label class="support-chat-sanction-days">
+                                        Срок, дней
+                                        <input id="support-chat-sanction-days" type="number" min="1" max="36500" value="7" required>
+                                    </label>
+                                    <label class="support-chat-permanent">
+                                        <input id="support-chat-sanction-permanent" type="checkbox">
+                                        Бессрочно
+                                    </label>
+                                </div>
+                                <div class="support-chat-sanction-actions">
+                                    <button id="support-chat-sanction-submit" class="support-chat-sanction-apply" type="submit">Применить ограничение</button>
+                                    <button id="support-chat-sanction-remove" class="support-chat-sanction-remove" type="button" hidden>Снять ограничение</button>
+                                </div>
+                                <p>Блокируются сообщения в поддержку и новые заявки на турниры. Уже одобренные команды сохраняются.</p>
+                            </form>
+                        </details>
+                    </section>
+                    <div id="support-chat-messages" class="support-chat-messages" aria-live="polite">
+                        <p class="chat-empty">Сообщений пока нет. Напишите нам — администратор ответит здесь.</p>
+                    </div>
+                    <form id="support-chat-form" class="support-chat-form">
+                        <div class="support-chat-composer">
+                            <textarea id="support-chat-input" rows="1" maxlength="2000" placeholder="Напишите сообщение…" required></textarea>
+                            <button id="support-chat-send" class="support-chat-send" type="submit" aria-label="Отправить сообщение">
+                                <span>Отправить</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 20 4l-5 16-3.5-6.5L4 12Zm7.5 1.5L20 4"/></svg>
+                            </button>
+                        </div>
+                        <span class="support-chat-hint">Enter — отправить <span>·</span> Shift + Enter — новая строка</span>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- МОДАЛКА ЗАЯВКИ -->
+    <div id="application-modal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-tournament-title">Подача заявки</h3>
+                <span class="close-modal" onclick="closeAppModal()">&times;</span>
+            </div>
+            <form onsubmit="handleSendApplication(event)">
+                <input type="hidden" id="app-tournament-id">
+                <div class="form-group">
+                    <label>Название команды</label>
+                    <input type="text" id="app-team-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Контакты капитана</label>
+                    <input type="text" id="app-contact" required>
+                </div>
+                <div class="form-group">
+                    <label>Состав (Игроки)</label>
+                    <div id="app-roster-members" class="application-roster-members" hidden></div>
+                    <textarea id="app-roster" rows="3" required></textarea>
+                    <small id="app-roster-status" aria-live="polite"></small>
+                </div>
+                <button id="app-submit-button" type="submit" class="btn-ai">ОТПРАВИТЬ ЗАЯВКУ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- СКРИПТЫ -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
